@@ -4,9 +4,15 @@ let currentY = 0;       // 현재 y 위치
 let prevX = 0;          // 이전 x 위치
 let prevY = 0;          // 이전 y 위치
 let angle = 0;          // 이동 각도
-let speed = 10;          // 이동 속도
+let speed = 10;         // 이동 속도
 let bounceCount = 0;    // 튕긴 횟수
-let maxBounces = 100;     // 최대 튕김 횟수
+let maxBounces = 100;   // 최대 튕김 횟수
+
+// 점 스타일 설정
+let dotSize = 6;                    // 점 크기
+let dotColor = '#000000';           // 점 색상
+let dotOpacityRandomness = 80;      // 투명도 랜덤 정도 (0-100)
+let dotShape = 'circle';            // 점 모양
 
 function setup() {
   createCanvas(1200, 800);
@@ -15,10 +21,7 @@ function setup() {
 }
 
 function draw() {
-  if (isDrawing) { 
-    stroke(0);
-    strokeWeight(2);
-    
+  if (isDrawing) {
     // 이전 위치 저장
     prevX = currentX;
     prevY = currentY;
@@ -84,8 +87,8 @@ function draw() {
       console.log(`튕김 ${bounceCount}회`);
     }
     
-    // 선 그리기
-    line(prevX, prevY, currentX, currentY);
+    // 점 그리기 (선 대신 점들의 연속)
+    drawDot(currentX, currentY);
   }
 }
 
@@ -106,6 +109,29 @@ function drawLineAcross() {
   bounceCount = 0;
   
   loop();
+}
+
+// 점 그리기 함수
+function drawDot(x, y) {
+  // 점 색상 설정
+  let c = color(dotColor);
+  
+  // 투명도 계산: randomness에 따라 변화
+  let baseOpacity = 255;
+  let opacityVariation = map(dotOpacityRandomness, 0, 100, 0, 255);
+  let opacity = baseOpacity - random(opacityVariation);
+  
+  c.setAlpha(opacity);
+  
+  noStroke();
+  fill(c);
+  
+  if (dotShape === 'circle') {
+    circle(x, y, dotSize);
+  } else if (dotShape === 'square') {
+    rectMode(CENTER);
+    square(x, y, dotSize);
+  }
 }
 
 // DOM 로드 후 버튼에 이벤트 연결
