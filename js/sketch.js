@@ -6,7 +6,7 @@ let prevY = 0;          // 이전 y 위치
 let angle = 0;          // 이동 각도
 let speed = 10;          // 이동 속도
 let bounceCount = 0;    // 튕긴 횟수
-let maxBounces = 30;     // 최대 튕김 횟수
+let maxBounces = 100;     // 최대 튕김 횟수
 
 function setup() {
   createCanvas(1200, 800);
@@ -23,9 +23,19 @@ function draw() {
     prevX = currentX;
     prevY = currentY;
     
-    // 각도에 따라 이동 + 랜덤한 흔들림 (x, y 모두)
-    currentX += cos(angle) * speed + random(-speed*2, speed*2);
-    currentY += sin(angle) * speed + random(-speed*2, speed*2);
+    // 진행 방향으로 이동
+    let forwardX = cos(angle) * speed;
+    let forwardY = sin(angle) * speed;
+    
+    // 진행 방향에 수직인 방향 (왼쪽/오른쪽 흔들림)
+    let perpAngle = angle + HALF_PI; // 90도 회전
+    let wiggle = random(-speed*2, speed*2);
+    let wiggleX = cos(perpAngle) * wiggle;
+    let wiggleY = sin(perpAngle) * wiggle;
+    
+    // 최종 위치 = 앞으로 이동 + 좌우 흔들림
+    currentX += forwardX + wiggleX;
+    currentY += forwardY + wiggleY;
     
     // 벽 충돌 체크 및 반사
     let bounced = false;
