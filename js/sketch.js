@@ -1,56 +1,101 @@
 let isDrawing = false;  // 그리는 중인지 체크
-let currentX = 0;       // 현재 선의 x 위치
-let currentY = 0;       // 현재 선의 y 위치
+let currentX = 0;       // 현재 x 위치
+let currentY = 0;       // 현재 y 위치
+let prevX = 0;          // 이전 x 위치
 let prevY = 0;          // 이전 y 위치
+let angle = 0;          // 이동 각도
+let speed = 10;          // 이동 속도
+let bounceCount = 0;    // 튕긴 횟수
+let maxBounces = 30;     // 최대 튕김 횟수
 
 function setup() {
-  // 캔버스 생성 (600x600)
   createCanvas(1200, 800);
-  background(255); // 흰색 배경
-  noLoop(); // 기본적으로 draw 멈춤
+  background(255);
+  noLoop();
 }
 
 function draw() {
-  if (isDrawing) {
-    stroke(0); // 검은색
-    strokeWeight(2); // 선 두께
+  if (isDrawing) { 
+    stroke(0);
+    strokeWeight(2);
     
-    // y 좌표를 랜덤하게 변화
-    currentY = prevY + random(-20, 20);
-    
-    // 캔버스 범위 안에 유지
-    currentY = constrain(currentY, 0, height);
-    
-    // 이전 위치에서 현재 위치까지 선 그리기
-    if (currentX > 0) {
-      line(currentX - 5, prevY, currentX, currentY);
-    }
-    
-    // 현재 y를 다음 프레임의 이전 y로 저장
+    // 이전 위치 저장
+    prevX = currentX;
     prevY = currentY;
     
-    // x 위치 증가
-    currentX += 5;
+    // 각도에 따라 이동 + 랜덤한 흔들림 (x, y 모두)
+    currentX += cos(angle) * speed + random(-speed*2, speed*2);
+    currentY += sin(angle) * speed + random(-speed*2, speed*2);
     
-    // 끝까지 도달하면 멈춤
-    if (currentX >= width) {
-      isDrawing = false;
-      noLoop();
+    // 벽 충돌 체크 및 반사
+    let bounced = false;
+    
+    // 좌우 벽 충돌
+    if (currentX <= 0 || currentX >= width) {
+      if (bounceCount < maxBounces) {
+        angle = PI - angle; // x축 반사
+        // 랜덤 각도 추가 (더 드라마틱하게)
+        let randomAngle = random(radians(30), radians(150));
+        angle += random(-1, 1) * randomAngle * 0.8;
+        bounced = true;
+        
+        // 범위 내로 되돌림
+        currentX = constrain(currentX, 0, width);
+      } else {
+        // 최대 튕김 횟수 도달 시 종료
+        isDrawing = false;
+        noLoop();
+        return;
+      }
     }
+    
+    // 상하 벽 충돌
+    if (currentY <= 0 || currentY >= height) {
+      if (bounceCount < maxBounces) {
+        angle = -angle; // y축 반사
+        // 랜덤 각도 추가 (더 드라마틱하게)
+        let randomAngle = random(radians(30), radians(150));
+        angle += random(-1, 1) * randomAngle * 0.8;
+        bounced = true;
+        
+        // 범위 내로 되돌림
+        currentY = constrain(currentY, 0, height);
+      } else {
+        // 최대 튕김 횟수 도달 시 종료
+        isDrawing = false;
+        noLoop();
+        return;
+      }
+    }
+    
+    // 튕김 카운트 증가
+    if (bounced) {
+      bounceCount++;
+      console.log(`튕김 ${bounceCount}회`);
+    }
+    
+    // 선 그리기
+    line(prevX, prevY, currentX, currentY);
   }
 }
 
 // 버튼 클릭 시 선 그리기 시작
 function drawLineAcross() {
-  // 캔버스 초기화
   background(255);
   
-  // 그리기 시작
+  // 초기화
   isDrawing = true;
   currentX = 0;
-  currentY = height / 2; // 중앙에서 시작
+  currentY = height / 2;
+  prevX = currentX;
   prevY = currentY;
-  loop(); // draw 함수 반복 시작
+  
+  // 시작 각도 (오른쪽으로, 약간 위아래 랜덤)
+  angle = random(-PI/4, PI/4);
+  
+  bounceCount = 0;
+  
+  loop();
 }
 
 // DOM 로드 후 버튼에 이벤트 연결
