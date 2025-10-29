@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Random Pattern AR</title>
+    
+    <!-- MindAR + A-Frame -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1000;
+            font-family: sans-serif;
+        }
+        
+        #loading.hidden {
+            display: none;
+        }
+        
+        #instructions {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-family: sans-serif;
+            font-size: 14px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <!-- 로딩 화면 -->
+    <div id="loading">
+        <h2>AR 로딩 중...</h2>
+        <p>잠시만 기다려주세요</p>
+    </div>
+    
+    <!-- 안내 메시지 -->
+    <div id="instructions">
+        📱 포스터를 카메라로 비춰보세요
+    </div>
+    
+    <!-- AR Scene -->
+    <a-scene
+        mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF:0.001; filterBeta: 10; uiScanning: none; uiLoading: no;"
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+        
+        <!-- AR 콘텐츠: 포스터 인식 시 표시될 내용 -->
+        <a-entity mindar-image-target="targetIndex: 0">
+            <!-- 환영 텍스트 -->
+            <a-text 
+                value="Random Pattern\nManifesto" 
+                position="0 0.8 0" 
+                align="center"
+                color="#D4DDEF"
+                width="2"
+                font="https://cdn.aframe.io/fonts/Roboto-msdf.json">
+            </a-text>
+            
+            <!-- 정적 박스 -->
+            <a-box 
+                position="0 0.3 0" 
+                rotation="0 45 0"
+                color="#F5EA7A">
+            </a-box>
+            
+            <!-- 링크 버튼 (평면) -->
+            <a-plane 
+                position="0 -0.3 0" 
+                rotation="0 0 0"
+                width="1.5" 
+                height="0.3"
+                color="#586178"
+                id="link-button">
+                <a-text 
+                    value="Visit Website" 
+                    position="0 0 0.01" 
+                    align="center"
+                    color="white"
+                    width="1.5">
+                </a-text>
+            </a-plane>
+            
+            <!-- 장식 원들 -->
+            <a-torus 
+                position="-0.5 0 0" 
+                radius="0.1" 
+                radius-tubular="0.02"
+                color="#D4DDEF">
+            </a-torus>
+            
+            <a-torus 
+                position="0.5 0 0" 
+                radius="0.1" 
+                radius-tubular="0.02"
+                color="#F5EA7A">
+            </a-torus>
+        </a-entity>
+        
+        <!-- 카메라 -->
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    </a-scene>
+    
+    <script>
+        // AR Scene 이벤트
+        const sceneEl = document.querySelector('a-scene');
+        const loadingEl = document.getElementById('loading');
+        const instructionsEl = document.getElementById('instructions');
+        
+        // 로딩 완료
+        sceneEl.addEventListener('loaded', () => {
+            loadingEl.classList.add('hidden');
+        });
+        
+        // 포스터 인식 시
+        const target = document.querySelector('[mindar-image-target]');
+        
+        target.addEventListener('targetFound', () => {
+            console.log('포스터 인식됨!');
+            instructionsEl.textContent = '✨ AR 콘텐츠 표시 중';
+        });
+        
+        target.addEventListener('targetLost', () => {
+            console.log('포스터 놓침');
+            instructionsEl.textContent = '📱 포스터를 카메라로 비춰보세요';
+        });
+    </script>
+</body>
+</html>
+

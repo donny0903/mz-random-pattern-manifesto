@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Random Pattern AR</title>
+    
+    <!-- p5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    
+    <!-- MindAR + A-Frame -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1000;
+            font-family: sans-serif;
+        }
+        
+        #loading.hidden {
+            display: none;
+        }
+        
+        #instructions {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-family: sans-serif;
+            font-size: 14px;
+            z-index: 100;
+        }
+        
+        /* p5.js 캔버스를 숨김 (텍스처로만 사용) */
+        #p5-canvas-container {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 로딩 화면 -->
+    <div id="loading">
+        <h2>AR 로딩 중...</h2>
+        <p>잠시만 기다려주세요</p>
+    </div>
+    
+    <!-- 안내 메시지 -->
+    <div id="instructions">
+        📱 포스터를 카메라로 비춰보세요
+    </div>
+    
+    <!-- p5.js 캔버스 컨테이너 (보이지 않음) -->
+    <div id="p5-canvas-container"></div>
+    
+    <!-- AR Scene -->
+    <a-scene
+        mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF:0.001; filterBeta: 10; uiScanning: none; uiLoading: no;"
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+        
+        <!-- AR 콘텐츠: 포스터 인식 시 표시될 내용 -->
+        <a-entity mindar-image-target="targetIndex: 0">
+            <!-- p5.js 캔버스를 텍스처로 사용하는 평면 -->
+            <a-plane 
+                id="pattern-plane"
+                position="0 0 0" 
+                rotation="0 0 0"
+                width="2" 
+                height="1.4"
+                material="shader: flat; transparent: true">
+            </a-plane>
+            
+            <!-- 프레임 장식 -->
+            <a-box 
+                position="0 0.75 -0.01" 
+                width="2.1" 
+                height="0.1" 
+                depth="0.02"
+                color="#586178">
+            </a-box>
+            <a-box 
+                position="0 -0.75 -0.01" 
+                width="2.1" 
+                height="0.1" 
+                depth="0.02"
+                color="#586178">
+            </a-box>
+        </a-entity>
+        
+        <!-- 카메라 -->
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    </a-scene>
+    
+    <!-- p5.js 패턴 생성 스크립트 (index.html에서 가져옴) -->
+    <script>
+        // 패턴 생성 변수들 (js/sketch.js에서 가져옴)
+        let isDrawing = false;
+        
+        // 첫 번째 점
+        let currentX1 = 0, currentY1 = 0, prevX1 = 0, prevY1 = 0, angle1 = 0, bounceCount1 = 0;
+        
+        // 두 번째 점
+        let currentX2 = 0, currentY2 = 0, prevX2 = 0, prevY2 = 0, angle2 = 0, bounceCount2 = 0;
+        
+        // 설정
+        let speed1 = 10, maxBounces1 = 100, dotSize1 = 6, dotColor1 = '#D4DDEF', dotOpacityRandomness1 = 80, dotShape1 = 'square';
+        let speed2 = 10, maxBounces2 = 100, dotSize2 = 6, dotColor2 = '#F5EA7A', dotOpacityRandomness2 = 80, dotShape2 = 'circle';
+        
+        let p5Canvas;
+        
+        function setup() {
+            // 캔버스 생성 (AR에서 사용할 크기)
+            p5Canvas = createCanvas(800, 600);
+            p5Canvas.parent('p5-canvas-container');
+            background(0);
+            
+            // 패턴 그리기 시작
+            startPattern();
+            
+            // A-Frame 평면에 캔버스 텍스처 적용
+            setTimeout(() => {
+                const plane = document.getElementById('pattern-plane');
+                const canvas = document.querySelector('#p5-canvas-container canvas');
+                if (plane && canvas) {
+                    plane.setAttribute('material', {
+                        shader: 'flat',
+                        src: canvas,
+                        transparent: false
+                    });
+                }
+            }, 1000);
+        }
+        
+        function draw() {
+            if (isDrawing) {
+                updateDot(1);
+                updateDot(2);
+            }
+        }
+        
+        function startPattern() {
+            isDrawing = true;
+            
+            // 첫 번째 점 초기화
+            currentX1 = 0;
+            currentY1 = height / 2;
+            prevX1 = currentX1;
+            prevY1 = currentY1; 
+            angle1 = random(-PI/4, PI/4);
+            bounceCount1 = 0;
+            
+            // 두 번째 점 초기화
+            currentX2 = width;
+            currentY2 = height / 2;
+            prevX2 = currentX2;
+            prevY2 = currentY2;
+            angle2 = random(PI - PI/4, PI + PI/4);
+            bounceCount2 = 0;
+        }
+        
+        function updateDot(dotNumber) {
+            let currentX, currentY, prevX, prevY, angle, bounceCount, speed, maxBounces;
+            
+            if (dotNumber === 1) {
+                currentX = currentX1; currentY = currentY1; prevX = prevX1; prevY = prevY1;
+                angle = angle1; bounceCount = bounceCount1; speed = speed1; maxBounces = maxBounces1;
+            } else {
+                currentX = currentX2; currentY = currentY2; prevX = prevX2; prevY = prevY2;
+                angle = angle2; bounceCount = bounceCount2; speed = speed2; maxBounces = maxBounces2;
+            }
+            
+            prevX = currentX;
+            prevY = currentY;
+            
+            let forwardX = cos(angle) * speed;
+            let forwardY = sin(angle) * speed;
+            let perpAngle = angle + HALF_PI;
+            let wiggle = random(-speed*2, speed*2);
+            let wiggleX = cos(perpAngle) * wiggle;
+            let wiggleY = sin(perpAngle) * wiggle;
+            
+            currentX += forwardX + wiggleX;
+            currentY += forwardY + wiggleY;
+            
+            let bounced = false;
+            
+            if (currentX <= 0 || currentX >= width) {
+                if (bounceCount < maxBounces) {
+                    angle = PI - angle;
+                    let randomAngle = random(radians(30), radians(150));
+                    angle += random(-1, 1) * randomAngle * 0.8;
+                    bounced = true;
+                    currentX = constrain(currentX, 0, width);
+                } else {
+                    return;
+                }
+            }
+            
+            if (currentY <= 0 || currentY >= height) {
+                if (bounceCount < maxBounces) {
+                    angle = -angle;
+                    let randomAngle = random(radians(30), radians(150));
+                    angle += random(-1, 1) * randomAngle * 0.8;
+                    bounced = true;
+                    currentY = constrain(currentY, 0, height);
+                } else {
+                    return;
+                }
+            }
+            
+            if (bounced) bounceCount++;
+            
+            if (dotNumber === 1) {
+                currentX1 = currentX; currentY1 = currentY; prevX1 = prevX; prevY1 = prevY;
+                angle1 = angle; bounceCount1 = bounceCount;
+            } else {
+                currentX2 = currentX; currentY2 = currentY; prevX2 = prevX; prevY2 = prevY;
+                angle2 = angle; bounceCount2 = bounceCount;
+            }
+            
+            drawDot(currentX, currentY, dotNumber);
+        }
+        
+        function drawDot(x, y, dotNumber) {
+            let dotColor, dotOpacityRandomness, dotSize, dotShape;
+            
+            if (dotNumber === 1) {
+                dotColor = dotColor1; dotOpacityRandomness = dotOpacityRandomness1;
+                dotSize = dotSize1; dotShape = dotShape1;
+            } else {
+                dotColor = dotColor2; dotOpacityRandomness = dotOpacityRandomness2;
+                dotSize = dotSize2; dotShape = dotShape2;
+            }
+            
+            let c = color(dotColor);
+            let baseOpacity = 255;
+            let opacityVariation = map(dotOpacityRandomness, 0, 100, 0, 255);
+            let opacity = baseOpacity - random(opacityVariation);
+            c.setAlpha(opacity);
+            
+            noStroke();
+            fill(c);
+            
+            if (dotShape === 'circle') {
+                circle(x, y, dotSize);
+            } else if (dotShape === 'square') {
+                rectMode(CENTER);
+                square(x, y, dotSize);
+            }
+        }
+    </script>
+    
+    <script>
+        // AR Scene 이벤트
+        const sceneEl = document.querySelector('a-scene');
+        const loadingEl = document.getElementById('loading');
+        const instructionsEl = document.getElementById('instructions');
+        
+        sceneEl.addEventListener('loaded', () => {
+            loadingEl.classList.add('hidden');
+        });
+        
+        const target = document.querySelector('[mindar-image-target]');
+        
+        target.addEventListener('targetFound', () => {
+            console.log('포스터 인식됨!');
+            instructionsEl.textContent = '✨ 패턴 생성 중';
+        });
+        
+        target.addEventListener('targetLost', () => {
+            console.log('포스터 놓침');
+            instructionsEl.textContent = '📱 포스터를 카메라로 비춰보세요';
+        });
+    </script>
+</body>
+</html>
+
