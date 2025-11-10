@@ -7,7 +7,7 @@ const svgOriginalHeight = 261;
 
 // SVG 스케일 및 위치 설정
 const svgScale = 2;  // SVG 확대 비율
-const svgBorderWidth = 4;  // SVG 테두리 두께
+const svgBorderWidth = 2;  // SVG 테두리 두께
 let svgOffsetX = 0;
 let svgOffsetY = 0;
 
