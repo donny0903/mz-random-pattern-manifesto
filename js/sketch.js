@@ -32,6 +32,9 @@ let dotColor2 = '#F5EA7A';
 let dotOpacityRandomness2 = 80;
 let dotShape2 = 'circle';
 
+// 5가지 시드값 (5가지 다른 움직임 패턴)
+const seeds = [12345, 67890, 11111, 22222, 99999];
+
 function setup() {
   createCanvas(1200, 800);
   background(0);  // 검은색 배경
@@ -150,6 +153,13 @@ function updateDot(dotNumber) {
 // 버튼 클릭 시 선 그리기 시작
 function drawLineAcross() {
   background(0);  // 검은색 배경
+  
+  // 5가지 시드 중 랜덤하게 선택
+  let selectedSeed = random(seeds);
+  console.log('선택된 시드:', selectedSeed);
+  
+  // 선택된 시드로 랜덤 시드 설정
+  randomSeed(selectedSeed);
   
   // 초기화
   isDrawing = true;
