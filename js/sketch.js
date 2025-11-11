@@ -78,7 +78,7 @@ let bounceCount8 = 0;
 // 첫 번째 점 설정 (회색 네모)
 let speed1 = 10;
 let maxBounces1 = 40;
-let dotSize1 = 5 ;
+let dotSize1 = 3 ;
 let dotColor1 = '#D4DDEF';
 let dotOpacityRandomness1 = 80;
 let dotShape1 = 'square';
@@ -86,7 +86,7 @@ let dotShape1 = 'square';
 // 두 번째 점 설정 (노란색 원)
 let speed2 = 10;
 let maxBounces2 = 40;
-let dotSize2 = 5 ;
+let dotSize2 = 3 ;
 let dotColor2 = '#F5EA7A';
 let dotOpacityRandomness2 = 80;
 let dotShape2 = 'circle';
@@ -94,7 +94,7 @@ let dotShape2 = 'circle';
 // 세 번째 점 설정 (회색 네모)
 let speed3 = 10;
 let maxBounces3 = 40;
-let dotSize3 = 5 ;
+let dotSize3 = 3 ;
 let dotColor3 = '#D4DDEF';
 let dotOpacityRandomness3 = 80;
 let dotShape3 = 'square';
@@ -102,7 +102,7 @@ let dotShape3 = 'square';
 // 네 번째 점 설정 (노란색 원)
 let speed4 = 10;
 let maxBounces4 = 40;
-let dotSize4 = 5 ;
+let dotSize4 = 3 ;
 let dotColor4 = '#F5EA7A';
 let dotOpacityRandomness4 = 80;
 let dotShape4 = 'circle';
@@ -110,7 +110,7 @@ let dotShape4 = 'circle';
 // 다섯 번째 점 설정 (회색 네모)
 let speed5 = 10;
 let maxBounces5 = 40;
-let dotSize5 = 5 ;
+let dotSize5 = 3 ;
 let dotColor5 = '#D4DDEF';
 let dotOpacityRandomness5 = 80;
 let dotShape5 = 'square';
@@ -118,7 +118,7 @@ let dotShape5 = 'square';
 // 여섯 번째 점 설정 (노란색 원)
 let speed6 = 10;
 let maxBounces6 = 40;
-let dotSize6 = 5 ;
+let dotSize6 = 3 ;
 let dotColor6 = '#F5EA7A';
 let dotOpacityRandomness6 = 80;
 let dotShape6 = 'circle';
@@ -126,7 +126,7 @@ let dotShape6 = 'circle';
 // 일곱 번째 점 설정 (회색 네모)
 let speed7 = 10;
 let maxBounces7 = 40;
-let dotSize7 = 5;
+let dotSize7 = 3;
 let dotColor7 = '#D4DDEF';
 let dotOpacityRandomness7 = 80;
 let dotShape7 = 'square';
@@ -134,13 +134,13 @@ let dotShape7 = 'square';
 // 여덟 번째 점 설정 (노란색 원)
 let speed8 = 10;
 let maxBounces8 = 40;
-let dotSize8 = 5;
+let dotSize8 = 3;
 let dotColor8 = '#F5EA7A';
 let dotOpacityRandomness8 = 80;
 let dotShape8 = 'circle';
 
 // 5가지 시드값 (5가지 다른 움직임 패턴)
-const seeds = [11111, 22222, 33333, 44444, 55555];
+const seeds = [11497110100111109,11411198111116, 10411710997110, 10911711510599, 108111118101];
 
 function setup() {
   // A2 비율 유지하면서 작은 크기 (약 70% 크기)
@@ -152,6 +152,9 @@ function setup() {
   // SVG를 캔버스 중앙에 배치하기 위한 오프셋 계산
   svgOffsetX = (width - svgOriginalWidth * svgScale) / 2;
   svgOffsetY = (height - svgOriginalHeight * svgScale) / 2;
+  
+  // 페이지 로드 시 자동으로 패턴 그리기 시작
+  drawLineAcross();
 }
 
 function draw() {
