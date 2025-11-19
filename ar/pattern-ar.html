@@ -56,6 +56,16 @@
             top: -9999px;
             left: -9999px;
         }
+        
+        /* AR 콘텐츠 스무딩 (CSS 레벨) */
+        a-scene {
+            will-change: transform;
+        }
+        
+        [mindar-image-target] {
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
     </style>
 </head>
 <body>
@@ -75,14 +85,14 @@
     
     <!-- AR Scene -->
     <a-scene
-        mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF:0.001; filterBeta: 10; uiScanning: none; uiLoading: no;"
+        mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF:1.0; filterBeta: 10000; warmupTolerance: 10; missTolerance: 10; uiScanning: none; uiLoading: no;"
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false">
         
         <!-- AR 콘텐츠: 포스터 인식 시 표시될 내용 -->
-        <a-entity mindar-image-target="targetIndex: 0">
+        <a-entity mindar-image-target="targetIndex: 0" smoothing="enabled: true; factor: 0.1;">
             <!-- p5.js 캔버스를 텍스처로 사용하는 평면 (A2 비율: 1:1.414) -->
             <a-plane 
                 id="pattern-plane"
@@ -97,6 +107,59 @@
         <!-- 카메라 -->
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     </a-scene>
+    
+    <!-- 스무딩 컴포넌트 (떨림 방지) - Moving Average -->
+    <script>
+        AFRAME.registerComponent('smoothing', {
+            schema: {
+                enabled: {type: 'boolean', default: true},
+                factor: {type: 'number', default: 0.1}
+            },
+            
+            init: function() {
+                // Moving average를 위한 히스토리 저장
+                this.positionHistory = [];
+                this.rotationHistory = [];
+                this.maxHistorySize = 10; // 지난 10 프레임 평균
+                this.smoothedPosition = new THREE.Vector3();
+                this.smoothedRotation = new THREE.Quaternion();
+            },
+            
+            tick: function() {
+                if (!this.data.enabled) return;
+                
+                const object3D = this.el.object3D;
+                
+                // 현재 위치/회전을 히스토리에 추가
+                this.positionHistory.push(object3D.position.clone());
+                this.rotationHistory.push(object3D.quaternion.clone());
+                
+                // 히스토리 크기 제한
+                if (this.positionHistory.length > this.maxHistorySize) {
+                    this.positionHistory.shift();
+                    this.rotationHistory.shift();
+                }
+                
+                // Position: 평균 계산
+                this.smoothedPosition.set(0, 0, 0);
+                for (let i = 0; i < this.positionHistory.length; i++) {
+                    this.smoothedPosition.add(this.positionHistory[i]);
+                }
+                this.smoothedPosition.divideScalar(this.positionHistory.length);
+                
+                // Rotation: 마지막 몇 개만 부드럽게 (quaternion 평균은 복잡)
+                const recentRotations = this.rotationHistory.slice(-3);
+                this.smoothedRotation.copy(recentRotations[0]);
+                for (let i = 1; i < recentRotations.length; i++) {
+                    this.smoothedRotation.slerp(recentRotations[i], 1.0 / (i + 1));
+                }
+                
+                // 적용
+                object3D.position.copy(this.smoothedPosition);
+                object3D.quaternion.copy(this.smoothedRotation);
+            }
+        });
+    </script>
     
     <!-- p5.js 패턴 생성 스크립트 (sketch.js와 동일) -->
     <script src="../js/sketch.js"></script>
