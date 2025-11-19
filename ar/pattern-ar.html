@@ -77,7 +77,7 @@
     
     <!-- 안내 메시지 -->
     <div id="instructions">
-        📱 포스터를 카메라로 비춰보세요
+        Stand By
     </div>
     
     <!-- p5.js 캔버스 컨테이너 (보이지 않음) -->
@@ -195,6 +195,9 @@
             }, 1000);
         };
         
+        // 패턴 완성 상태 추적
+        let patternCompleted = false;
+        
         // AR용 draw 오버라이드 (텍스처 업데이트 추가)
         let originalDraw = draw;
         draw = function() {
@@ -238,6 +241,42 @@
                 drawingContext.stroke(svgPath2);
                 drawingContext.restore();
                 
+                // 패턴 완성도 계산 (진행률)
+                const totalProgress = 
+                    bounceCount1 / maxBounces1 +
+                    bounceCount2 / maxBounces2 +
+                    bounceCount3 / maxBounces3 +
+                    bounceCount4 / maxBounces4 +
+                    bounceCount5 / maxBounces5 +
+                    bounceCount6 / maxBounces6 +
+                    bounceCount7 / maxBounces7 +
+                    bounceCount8 / maxBounces8;
+                
+                const progressPercent = Math.min(100, Math.round((totalProgress / 8) * 100));
+                
+                // 진행률 이벤트 발생 (매 프레임)
+                window.dispatchEvent(new CustomEvent('patternProgress', { 
+                    detail: { percent: progressPercent } 
+                }));
+                
+                // 패턴 완성 체크
+                const allDotsCompleted = 
+                    bounceCount1 >= maxBounces1 &&
+                    bounceCount2 >= maxBounces2 &&
+                    bounceCount3 >= maxBounces3 &&
+                    bounceCount4 >= maxBounces4 &&
+                    bounceCount5 >= maxBounces5 &&
+                    bounceCount6 >= maxBounces6 &&
+                    bounceCount7 >= maxBounces7 &&
+                    bounceCount8 >= maxBounces8;
+                
+                if (allDotsCompleted && !patternCompleted) {
+                    patternCompleted = true;
+                    // 커스텀 이벤트 발생
+                    window.dispatchEvent(new CustomEvent('patternCompleted'));
+                    console.log('✅ 패턴 완성!');
+                }
+                
                 // A-Frame 텍스처 업데이트
                 const plane = document.getElementById('pattern-plane');
                 if (plane && plane.components.material && plane.components.material.material) {
@@ -264,17 +303,36 @@
         
         target.addEventListener('targetFound', () => {
             console.log('포스터 인식됨!');
-            instructionsEl.textContent = '✨ 패턴 생성 중';
+            instructionsEl.textContent = 'Random Accessing…';
             
             // 재인식 시 패턴 리셋
             if (typeof drawLineAcross === 'function') {
+                patternCompleted = false; // 패턴 완성 플래그 초기화
                 drawLineAcross();
             }
         });
         
         target.addEventListener('targetLost', () => {
             console.log('포스터 놓침');
-            instructionsEl.textContent = '📱 포스터를 카메라로 비춰보세요';
+            instructionsEl.textContent = 'Stand By';
+        });
+        
+        // 패턴 진행률 이벤트 감지 (선택적)
+        window.addEventListener('patternProgress', (e) => {
+            const percent = e.detail.percent;
+            // 진행률 표시 (원하면 활성화)
+            // instructionsEl.textContent = `✨ Random access… ${percent}%`;
+        });
+        
+        // 패턴 완성 이벤트 감지
+        window.addEventListener('patternCompleted', () => {
+            console.log('패턴 완성 감지!');
+            instructionsEl.textContent = 'Access Complete';
+            
+            // 3초 후 메시지 변경 (선택적)
+            setTimeout(() => {
+                instructionsEl.textContent = 'Random Access Memory';
+            }, 3000);
         });
     </script>
 </body>
