@@ -69,12 +69,11 @@
     </style>
 </head>
 <body>
-    <!-- 로딩 화면 -->
+    <!-- 로딩 화면
     <div id="loading">
         <h2>AR 로딩 중...</h2>
         <p>잠시만 기다려주세요</p>
-    </div>
-    
+    </div> -->
     <!-- 안내 메시지 -->
     <div id="instructions">
         Stand By
@@ -226,6 +225,10 @@
                 updateDot(6);
                 updateDot(7);
                 updateDot(8);
+                updateDot(9);
+                updateDot(10);
+                updateDot(11);
+                updateDot(12);
                 
                 drawingContext.restore();
                 
@@ -250,9 +253,13 @@
                     bounceCount5 / maxBounces5 +
                     bounceCount6 / maxBounces6 +
                     bounceCount7 / maxBounces7 +
-                    bounceCount8 / maxBounces8;
+                    bounceCount8 / maxBounces8 +
+                    bounceCount9 / maxBounces9 +
+                    bounceCount10 / maxBounces10 +
+                    bounceCount11 / maxBounces11 +
+                    bounceCount12 / maxBounces12;
                 
-                const progressPercent = Math.min(100, Math.round((totalProgress / 8) * 100));
+                const progressPercent = Math.min(100, Math.round((totalProgress / 12) * 100));
                 
                 // 진행률 이벤트 발생 (매 프레임)
                 window.dispatchEvent(new CustomEvent('patternProgress', { 
@@ -268,7 +275,11 @@
                     bounceCount5 >= maxBounces5 &&
                     bounceCount6 >= maxBounces6 &&
                     bounceCount7 >= maxBounces7 &&
-                    bounceCount8 >= maxBounces8;
+                    bounceCount8 >= maxBounces8 &&
+                    bounceCount9 >= maxBounces9 &&
+                    bounceCount10 >= maxBounces10 &&
+                    bounceCount11 >= maxBounces11 &&
+                    bounceCount12 >= maxBounces12;
                 
                 if (allDotsCompleted && !patternCompleted) {
                     patternCompleted = true;

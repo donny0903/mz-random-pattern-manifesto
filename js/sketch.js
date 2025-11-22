@@ -76,6 +76,38 @@ let prevY8 = 0;
 let angle8 = 0;
 let bounceCount8 = 0;
 
+// 아홉 번째 점
+let currentX9 = 0;
+let currentY9 = 0;
+let prevX9 = 0;
+let prevY9 = 0;
+let angle9 = 0;
+let bounceCount9 = 0;
+
+// 열 번째 점
+let currentX10 = 0;
+let currentY10 = 0;
+let prevX10 = 0;
+let prevY10 = 0;
+let angle10 = 0;
+let bounceCount10 = 0;
+
+// 열한 번째 점
+let currentX11 = 0;
+let currentY11 = 0;
+let prevX11 = 0;
+let prevY11 = 0;
+let angle11 = 0;
+let bounceCount11 = 0;
+
+// 열두 번째 점
+let currentX12 = 0;
+let currentY12 = 0;
+let prevX12 = 0;
+let prevY12 = 0;
+let angle12 = 0;
+let bounceCount12 = 0;
+
 // 첫 번째 점 설정 (회색 네모)
 let speed1 = 10;
 let maxBounces1 = 40;
@@ -140,8 +172,43 @@ let dotColor8 = '#F5EA7A';
 let dotOpacityRandomness8 = 80;
 let dotShape8 = 'circle';
 
+// 아홉 번째 점 설정 (회색 네모)
+let speed9 = 10;
+let maxBounces9 = 40;
+let dotSize9 = 3;
+let dotColor9 = '#D4DDEF';
+let dotOpacityRandomness9 = 80;
+let dotShape9 = 'square';
+
+// 열 번째 점 설정 (노란색 원)
+let speed10 = 10;
+let maxBounces10 = 40;
+let dotSize10 = 3;
+let dotColor10 = '#F5EA7A';
+let dotOpacityRandomness10 = 80;
+let dotShape10 = 'circle';
+
+// 열한 번째 점 설정 (회색 네모)
+let speed11 = 10;
+let maxBounces11 = 40;
+let dotSize11 = 3;
+let dotColor11 = '#D4DDEF';
+let dotOpacityRandomness11 = 80;
+let dotShape11 = 'square';
+
+// 열두 번째 점 설정 (노란색 원)
+let speed12 = 10;
+let maxBounces12 = 40;
+let dotSize12 = 3;
+let dotColor12 = '#F5EA7A';
+let dotOpacityRandomness12 = 80;
+let dotShape12 = 'circle';
+
 // 5가지 시드값 (5가지 다른 움직임 패턴)
 const seeds = [11497110100111109,11411198111116, 10411710997110, 10911711510599, 108111118101];
+
+// 전역 점 크기 설정 (모든 점에 적용)
+const globalDotSize = 4.3;
 
 function setup() {
   // A2 비율 유지하면서 작은 크기 (약 70% 크기)
@@ -184,6 +251,10 @@ function draw() {
     updateDot(6);
     updateDot(7);
     updateDot(8);
+    updateDot(9);
+    updateDot(10);
+    updateDot(11);
+    updateDot(12);
     
     drawingContext.restore();
     
@@ -270,7 +341,7 @@ function updateDot(dotNumber) {
     bounceCount = bounceCount7;
     speed = speed7;
     maxBounces = maxBounces7;
-  } else {
+  } else if (dotNumber === 8) {
     currentX = currentX8;
     currentY = currentY8;
     prevX = prevX8;
@@ -279,6 +350,42 @@ function updateDot(dotNumber) {
     bounceCount = bounceCount8;
     speed = speed8;
     maxBounces = maxBounces8;
+  } else if (dotNumber === 9) {
+    currentX = currentX9;
+    currentY = currentY9;
+    prevX = prevX9;
+    prevY = prevY9;
+    angle = angle9;
+    bounceCount = bounceCount9;
+    speed = speed9;
+    maxBounces = maxBounces9;
+  } else if (dotNumber === 10) {
+    currentX = currentX10;
+    currentY = currentY10;
+    prevX = prevX10;
+    prevY = prevY10;
+    angle = angle10;
+    bounceCount = bounceCount10;
+    speed = speed10;
+    maxBounces = maxBounces10;
+  } else if (dotNumber === 11) {
+    currentX = currentX11;
+    currentY = currentY11;
+    prevX = prevX11;
+    prevY = prevY11;
+    angle = angle11;
+    bounceCount = bounceCount11;
+    speed = speed11;
+    maxBounces = maxBounces11;
+  } else {
+    currentX = currentX12;
+    currentY = currentY12;
+    prevX = prevX12;
+    prevY = prevY12;
+    angle = angle12;
+    bounceCount = bounceCount12;
+    speed = speed12;
+    maxBounces = maxBounces12;
   }
   
   // 이전 위치 저장
@@ -389,13 +496,41 @@ function updateDot(dotNumber) {
     prevY7 = prevY;
     angle7 = angle;
     bounceCount7 = bounceCount;
-  } else {
+  } else if (dotNumber === 8) {
     currentX8 = currentX;
     currentY8 = currentY;
     prevX8 = prevX;
     prevY8 = prevY;
     angle8 = angle;
     bounceCount8 = bounceCount;
+  } else if (dotNumber === 9) {
+    currentX9 = currentX;
+    currentY9 = currentY;
+    prevX9 = prevX;
+    prevY9 = prevY;
+    angle9 = angle;
+    bounceCount9 = bounceCount;
+  } else if (dotNumber === 10) {
+    currentX10 = currentX;
+    currentY10 = currentY;
+    prevX10 = prevX;
+    prevY10 = prevY;
+    angle10 = angle;
+    bounceCount10 = bounceCount;
+  } else if (dotNumber === 11) {
+    currentX11 = currentX;
+    currentY11 = currentY;
+    prevX11 = prevX;
+    prevY11 = prevY;
+    angle11 = angle;
+    bounceCount11 = bounceCount;
+  } else {
+    currentX12 = currentX;
+    currentY12 = currentY;
+    prevX12 = prevX;
+    prevY12 = prevY;
+    angle12 = angle;
+    bounceCount12 = bounceCount;
   }
   
   // 점 그리기
@@ -497,6 +632,38 @@ function drawLineAcross() {
   angle8 = random(PI, TWO_PI);
   bounceCount8 = 0;
   
+  // 아홉 번째 점 초기화 (랜덤 위치)
+  currentX9 = svgCenterX + random(-startRadius, startRadius);
+  currentY9 = svgCenterY + random(-startRadius, startRadius);
+  prevX9 = currentX9;
+  prevY9 = currentY9;
+  angle9 = random(TWO_PI);
+  bounceCount9 = 0;
+  
+  // 열 번째 점 초기화 (랜덤 위치)
+  currentX10 = svgCenterX + random(-startRadius, startRadius);
+  currentY10 = svgCenterY + random(-startRadius, startRadius);
+  prevX10 = currentX10;
+  prevY10 = currentY10;
+  angle10 = random(TWO_PI);
+  bounceCount10 = 0;
+  
+  // 열한 번째 점 초기화 (랜덤 위치)
+  currentX11 = svgCenterX + random(-startRadius, startRadius);
+  currentY11 = svgCenterY + random(-startRadius, startRadius);
+  prevX11 = currentX11;
+  prevY11 = currentY11;
+  angle11 = random(TWO_PI);
+  bounceCount11 = 0;
+  
+  // 열두 번째 점 초기화 (랜덤 위치)
+  currentX12 = svgCenterX + random(-startRadius, startRadius);
+  currentY12 = svgCenterY + random(-startRadius, startRadius);
+  prevX12 = currentX12;
+  prevY12 = currentY12;
+  angle12 = random(TWO_PI);
+  bounceCount12 = 0;
+  
   loop();
 }
 
@@ -540,11 +707,31 @@ function drawDot(x, y, dotNumber) {
     dotOpacityRandomness = dotOpacityRandomness7;
     dotSize = dotSize7;
     dotShape = dotShape7;
-  } else {
+  } else if (dotNumber === 8) {
     dotColor = dotColor8;
     dotOpacityRandomness = dotOpacityRandomness8;
     dotSize = dotSize8;
     dotShape = dotShape8;
+  } else if (dotNumber === 9) {
+    dotColor = dotColor9;
+    dotOpacityRandomness = dotOpacityRandomness9;
+    dotSize = dotSize9;
+    dotShape = dotShape9;
+  } else if (dotNumber === 10) {
+    dotColor = dotColor10;
+    dotOpacityRandomness = dotOpacityRandomness10;
+    dotSize = dotSize10;
+    dotShape = dotShape10;
+  } else if (dotNumber === 11) {
+    dotColor = dotColor11;
+    dotOpacityRandomness = dotOpacityRandomness11;
+    dotSize = dotSize11;
+    dotShape = dotShape11;
+  } else {
+    dotColor = dotColor12;
+    dotOpacityRandomness = dotOpacityRandomness12;
+    dotSize = dotSize12;
+    dotShape = dotShape12;
   }
   
   // 점 색상 설정
@@ -560,11 +747,12 @@ function drawDot(x, y, dotNumber) {
   noStroke();
   fill(c);
   
+  // 전역 크기 사용
   if (dotShape === 'circle') {
-    circle(x, y, dotSize);
+    circle(x, y, globalDotSize);
   } else if (dotShape === 'square') {
     rectMode(CENTER);
-    square(x, y, dotSize);
+    square(x, y, globalDotSize);
   }
 }
 
