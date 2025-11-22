@@ -161,7 +161,7 @@
     </script>
     
     <!-- p5.js 패턴 생성 스크립트 (sketch.js와 동일) -->
-    <script src="../js/sketch.js"></script>
+    <script src="../js/sketch.js?v=3"></script>
     
     <script>
         // AR용 setup 오버라이드
@@ -196,6 +196,11 @@
         
         // 패턴 완성 상태 추적
         let patternCompleted = false;
+        let frameCounter = 0;
+        
+        // DOM 요소 캐싱 (매 프레임 쿼리 방지)
+        let cachedPlane = null;
+        let cachedMaterial = null;
         
         // AR용 draw 오버라이드 (텍스처 업데이트 추가)
         let originalDraw = draw;
@@ -244,56 +249,64 @@
                 drawingContext.stroke(svgPath2);
                 drawingContext.restore();
                 
-                // 패턴 완성도 계산 (진행률)
-                const totalProgress = 
-                    bounceCount1 / maxBounces1 +
-                    bounceCount2 / maxBounces2 +
-                    bounceCount3 / maxBounces3 +
-                    bounceCount4 / maxBounces4 +
-                    bounceCount5 / maxBounces5 +
-                    bounceCount6 / maxBounces6 +
-                    bounceCount7 / maxBounces7 +
-                    bounceCount8 / maxBounces8 +
-                    bounceCount9 / maxBounces9 +
-                    bounceCount10 / maxBounces10 +
-                    bounceCount11 / maxBounces11 +
-                    bounceCount12 / maxBounces12;
-                
-                const progressPercent = Math.min(100, Math.round((totalProgress / 12) * 100));
-                
-                // 진행률 이벤트 발생 (매 프레임)
-                window.dispatchEvent(new CustomEvent('patternProgress', { 
-                    detail: { percent: progressPercent } 
-                }));
-                
-                // 패턴 완성 체크
-                const allDotsCompleted = 
-                    bounceCount1 >= maxBounces1 &&
-                    bounceCount2 >= maxBounces2 &&
-                    bounceCount3 >= maxBounces3 &&
-                    bounceCount4 >= maxBounces4 &&
-                    bounceCount5 >= maxBounces5 &&
-                    bounceCount6 >= maxBounces6 &&
-                    bounceCount7 >= maxBounces7 &&
-                    bounceCount8 >= maxBounces8 &&
-                    bounceCount9 >= maxBounces9 &&
-                    bounceCount10 >= maxBounces10 &&
-                    bounceCount11 >= maxBounces11 &&
-                    bounceCount12 >= maxBounces12;
-                
-                if (allDotsCompleted && !patternCompleted) {
-                    patternCompleted = true;
-                    // 커스텀 이벤트 발생
-                    window.dispatchEvent(new CustomEvent('patternCompleted'));
-                    console.log('✅ 패턴 완성!');
+                // 10프레임마다만 진행률 체크 (성능 최적화)
+                frameCounter++;
+                if (frameCounter % 10 === 0) {
+                    // 패턴 완성도 계산 (진행률)
+                    const totalProgress = 
+                        bounceCount1 / maxBounces1 +
+                        bounceCount2 / maxBounces2 +
+                        bounceCount3 / maxBounces3 +
+                        bounceCount4 / maxBounces4 +
+                        bounceCount5 / maxBounces5 +
+                        bounceCount6 / maxBounces6 +
+                        bounceCount7 / maxBounces7 +
+                        bounceCount8 / maxBounces8 +
+                        bounceCount9 / maxBounces9 +
+                        bounceCount10 / maxBounces10 +
+                        bounceCount11 / maxBounces11 +
+                        bounceCount12 / maxBounces12;
+                    
+                    const progressPercent = Math.min(100, Math.round((totalProgress / 12) * 100));
+                    
+                    // 진행률 이벤트 발생 (10프레임마다)
+                    window.dispatchEvent(new CustomEvent('patternProgress', { 
+                        detail: { percent: progressPercent } 
+                    }));
+                    
+                    // 패턴 완성 체크
+                    const allDotsCompleted = 
+                        bounceCount1 >= maxBounces1 &&
+                        bounceCount2 >= maxBounces2 &&
+                        bounceCount3 >= maxBounces3 &&
+                        bounceCount4 >= maxBounces4 &&
+                        bounceCount5 >= maxBounces5 &&
+                        bounceCount6 >= maxBounces6 &&
+                        bounceCount7 >= maxBounces7 &&
+                        bounceCount8 >= maxBounces8 &&
+                        bounceCount9 >= maxBounces9 &&
+                        bounceCount10 >= maxBounces10 &&
+                        bounceCount11 >= maxBounces11 &&
+                        bounceCount12 >= maxBounces12;
+                    
+                    if (allDotsCompleted && !patternCompleted) {
+                        patternCompleted = true;
+                        // 커스텀 이벤트 발생
+                        window.dispatchEvent(new CustomEvent('patternCompleted'));
+                        console.log('✅ 패턴 완성!');
+                    }
                 }
                 
-                // A-Frame 텍스처 업데이트
-                const plane = document.getElementById('pattern-plane');
-                if (plane && plane.components.material && plane.components.material.material) {
-                    const material = plane.components.material.material;
-                    if (material.map) {
-                        material.map.needsUpdate = true;
+                // A-Frame 텍스처 업데이트 (DOM 쿼리 캐싱)
+                if (!cachedPlane) {
+                    cachedPlane = document.getElementById('pattern-plane');
+                }
+                if (cachedPlane && cachedPlane.components.material && cachedPlane.components.material.material) {
+                    if (!cachedMaterial) {
+                        cachedMaterial = cachedPlane.components.material.material;
+                    }
+                    if (cachedMaterial.map) {
+                        cachedMaterial.map.needsUpdate = true;
                     }
                 }
             }
@@ -319,6 +332,7 @@
             // 재인식 시 패턴 리셋
             if (typeof drawLineAcross === 'function') {
                 patternCompleted = false; // 패턴 완성 플래그 초기화
+                frameCounter = 0; // 프레임 카운터 리셋
                 drawLineAcross();
             }
         });
