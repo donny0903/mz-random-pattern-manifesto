@@ -204,6 +204,7 @@ let dotColor12 = '#F5EA7A';
 let dotOpacityRandomness12 = 80;
 let dotShape12 = 'circle';
 
+ // random, robot, human, music, love
 // 5가지 시드값 (5가지 다른 움직임 패턴)
 const seeds = [11497110100111109,11411198111116, 10411710997110, 10911711510599, 108111118101];
 
