@@ -84,9 +84,9 @@
     
     <!-- AR Scene -->
     <a-scene
-        mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF:1.0; filterBeta: 10000; warmupTolerance: 10; missTolerance: 10; uiScanning: none; uiLoading: no;"
+        mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF:0.001; filterBeta: 0.1; warmupTolerance: 5; missTolerance: 5; uiScanning: none; uiLoading: no;"
         color-space="sRGB"
-        renderer="colorManagement: true, physicallyCorrectLights"
+        renderer="colorManagement: true, physicallyCorrectLights: false; antialias: false"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false">
         
@@ -119,7 +119,7 @@
                 // Moving average를 위한 히스토리 저장
                 this.positionHistory = [];
                 this.rotationHistory = [];
-                this.maxHistorySize = 10; // 지난 10 프레임 평균
+                this.maxHistorySize = 5; // 지난 5 프레임 평균 (성능 최적화)
                 this.smoothedPosition = new THREE.Vector3();
                 this.smoothedRotation = new THREE.Quaternion();
             },
@@ -161,16 +161,19 @@
     </script> -->
     
     <!-- p5.js 패턴 생성 스크립트 (sketch.js와 동일) -->
-    <script src="../js/sketch.js?v=3"></script>
+    <script src="../js/sketch.js?v=9"></script>
     
     <script>
         // AR용 setup 오버라이드
         let originalSetup = setup;
         setup = function() {
-            // AR용 캔버스 생성 (800x1131을 AR 평면 비율에 맞게 조정)
-            let canvas = createCanvas(800, 1131);
+            // AR용 캔버스 생성 (성능 최적화: 해상도 절반)
+            let canvas = createCanvas(400, 565);
             canvas.parent('p5-canvas-container');
             background(0);
+            
+            // 프레임레이트 제한 (성능 최적화)
+            frameRate(30);
             noLoop();
             
             // SVG를 캔버스 중앙에 배치하기 위한 오프셋 계산
@@ -188,7 +191,8 @@
                     plane.setAttribute('material', {
                         shader: 'flat',
                         src: canvas,
-                        transparent: false
+                        transparent: false,
+                        side: 'double'
                     });
                 }
             }, 1000);
@@ -297,16 +301,18 @@
                     }
                 }
                 
-                // A-Frame 텍스처 업데이트 (DOM 쿼리 캐싱)
-                if (!cachedPlane) {
-                    cachedPlane = document.getElementById('pattern-plane');
-                }
-                if (cachedPlane && cachedPlane.components.material && cachedPlane.components.material.material) {
-                    if (!cachedMaterial) {
-                        cachedMaterial = cachedPlane.components.material.material;
+                // A-Frame 텍스처 업데이트 (3프레임마다만 업데이트 - 성능 최적화)
+                if (frameCounter % 3 === 0) {
+                    if (!cachedPlane) {
+                        cachedPlane = document.getElementById('pattern-plane');
                     }
-                    if (cachedMaterial.map) {
-                        cachedMaterial.map.needsUpdate = true;
+                    if (cachedPlane && cachedPlane.components.material && cachedPlane.components.material.material) {
+                        if (!cachedMaterial) {
+                            cachedMaterial = cachedPlane.components.material.material;
+                        }
+                        if (cachedMaterial.map) {
+                            cachedMaterial.map.needsUpdate = true;
+                        }
                     }
                 }
             }
