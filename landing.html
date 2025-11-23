@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Pattern Manifesto - AR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 500px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .qr-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+        
+        .qr-container img {
+            display: block;
+            width: 300px;
+            height: 300px;
+        }
+        
+        p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        
+        @media (max-width: 480px) {
+            .qr-container img {
+                width: 250px;
+                height: 250px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RANDOM PATTERN MANIFESTO</h1>
+        <div class="qr-container">
+            <img src="asset/qr.png" alt="QR Code">
+        </div>
+        <p>QR 코드를 스캔하여<br>AR 경험을 시작하세요</p>
+    </div>
+</body>
+</html>
+
