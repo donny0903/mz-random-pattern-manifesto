@@ -98,7 +98,7 @@ let bounceCount12 = 0;
 
 // 첫 번째 점 설정 (회색 네모)
 let speed1 = 10;
-let maxBounces1 = 40;
+let maxBounces1 = 30;
 let dotSize1 = 3 ;
 let dotColor1 = '#D4DDEF';
 let dotOpacityRandomness1 = 80;
@@ -106,7 +106,7 @@ let dotShape1 = 'square';
 
 // 두 번째 점 설정 (노란색 원)
 let speed2 = 10;
-let maxBounces2 = 40;
+let maxBounces2 = 30;
 let dotSize2 = 3 ;
 let dotColor2 = '#F5EA7A';
 let dotOpacityRandomness2 = 80;
@@ -114,7 +114,7 @@ let dotShape2 = 'circle';
 
 // 세 번째 점 설정 (회색 네모)
 let speed3 = 10;
-let maxBounces3 = 40;
+let maxBounces3 = 30;
 let dotSize3 = 3 ;
 let dotColor3 = '#D4DDEF';
 let dotOpacityRandomness3 = 80;
@@ -122,7 +122,7 @@ let dotShape3 = 'square';
 
 // 네 번째 점 설정 (노란색 원)
 let speed4 = 10;
-let maxBounces4 = 40;
+let maxBounces4 = 30;
 let dotSize4 = 3 ;
 let dotColor4 = '#F5EA7A';
 let dotOpacityRandomness4 = 80;
@@ -130,7 +130,7 @@ let dotShape4 = 'circle';
 
 // 다섯 번째 점 설정 (회색 네모)
 let speed5 = 10;
-let maxBounces5 = 40;
+let maxBounces5 = 30;
 let dotSize5 = 3 ;
 let dotColor5 = '#D4DDEF';
 let dotOpacityRandomness5 = 80;
@@ -138,7 +138,7 @@ let dotShape5 = 'square';
 
 // 여섯 번째 점 설정 (노란색 원)
 let speed6 = 10;
-let maxBounces6 = 40;
+let maxBounces6 = 30;
 let dotSize6 = 3 ;
 let dotColor6 = '#F5EA7A';
 let dotOpacityRandomness6 = 80;
@@ -146,7 +146,7 @@ let dotShape6 = 'circle';
 
 // 일곱 번째 점 설정 (회색 네모)
 let speed7 = 10;
-let maxBounces7 = 40;
+let maxBounces7 = 30;
 let dotSize7 = 3;
 let dotColor7 = '#D4DDEF';
 let dotOpacityRandomness7 = 80;
@@ -154,7 +154,7 @@ let dotShape7 = 'square';
 
 // 여덟 번째 점 설정 (노란색 원)
 let speed8 = 10;
-let maxBounces8 = 40;
+let maxBounces8 = 30;
 let dotSize8 = 3;
 let dotColor8 = '#F5EA7A';
 let dotOpacityRandomness8 = 80;
@@ -162,7 +162,7 @@ let dotShape8 = 'circle';
 
 // 아홉 번째 점 설정 (회색 네모)
 let speed9 = 10;
-let maxBounces9 = 40;
+let maxBounces9 = 30;
 let dotSize9 = 3;
 let dotColor9 = '#D4DDEF';
 let dotOpacityRandomness9 = 80;
@@ -170,7 +170,7 @@ let dotShape9 = 'square';
 
 // 열 번째 점 설정 (노란색 원)
 let speed10 = 10;
-let maxBounces10 = 40;
+let maxBounces10 = 30;
 let dotSize10 = 3;
 let dotColor10 = '#F5EA7A';
 let dotOpacityRandomness10 = 80;
@@ -178,7 +178,7 @@ let dotShape10 = 'circle';
 
 // 열한 번째 점 설정 (회색 네모)
 let speed11 = 10;
-let maxBounces11 = 40;
+let maxBounces11 = 30;
 let dotSize11 = 3;
 let dotColor11 = '#D4DDEF';
 let dotOpacityRandomness11 = 80;
@@ -186,7 +186,7 @@ let dotShape11 = 'square';
 
 // 열두 번째 점 설정 (노란색 원)
 let speed12 = 10;
-let maxBounces12 = 40;
+let maxBounces12 = 30;
 let dotSize12 = 3;
 let dotColor12 = '#F5EA7A';
 let dotOpacityRandomness12 = 80;
@@ -210,8 +210,7 @@ function setup() {
   background(0);
   noLoop();
   
-  // 페이지 로드 시 자동으로 패턴 그리기 시작
-  drawLineAcross();
+  // 자동 실행하지 않음 - 버튼 클릭 시에만 실행
 }
 
 // 윈도우 리사이즈 처리

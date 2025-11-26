@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Pattern Manifesto - AR</title>
+    <title>MZ-RAM</title>
     <link rel="stylesheet" href="css/landingStyle.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <script src="js/sketch2.js"></script>
 </head>
 <body>
     <div id="landing-background"></div>
-    <audio id="bgm" loop>
-        <source src="asset/bgm.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bgm" loop preload="auto"></audio>
     
     <!-- 시작 화면: RANDOM ACCESS 버튼만 -->
     <div id="start-screen" class="screen active">
@@ -22,7 +20,7 @@
     <!-- 컨텐츠 화면: QR 코드 등 -->
     <div id="content-screen" class="screen">
         <div class="container">
-            <h1>RANDOM PATTERN MANIFESTO</h1>
+            <h1>RANDOM ACCESS MEMORY</h1>
             
             <div class="track-list">
                 <div class="track-item">1. "Give Life Back to Music"</div>
@@ -55,15 +53,62 @@
     </div>
     
     <script>
-        function startExperience() {
-            // 음악 재생 시작
+        // 현재 활성화된 트랙 인덱스 (0-based)
+        let currentTrackIndex = null;
+        // 트랙별 오디오 파일 경로 (1번 트랙 => asset/1.mp3 형태로 매핑)
+        const trackAudioFiles = [
+            'asset/1.mp3',
+            'asset/2.mp3',
+            'asset/3.mp3',
+            'asset/4.mp3',
+            'asset/5.mp3',
+            'asset/6.mp3',
+            'asset/7.mp3',
+            'asset/8.mp3',
+            'asset/9.mp3',
+            'asset/10.mp3',
+            'asset/11.mp3',
+            'asset/12.mp3',
+            'asset/13.mp3',
+        ];
+
+        function playTrackByIndex(index) {
+            if (index == null || index < 0 || index >= trackAudioFiles.length) return;
+
             const audio = document.getElementById('bgm');
+            const nextSrc = trackAudioFiles[index];
+
+            // 동일 트랙이면 다시 재생만 시도
+            if (currentTrackIndex === index && audio.src && audio.src.endsWith(nextSrc)) {
+                audio.play().catch(err => console.log('Audio play failed:', err));
+                return;
+            }
+
+            // 소스 교체 후 로드
+            audio.src = nextSrc;
+            audio.load();
+            currentTrackIndex = index;
             audio.play().catch(err => console.log('Audio play failed:', err));
+        }
+
+        function startExperience() {
+            // 패턴 그리기 시작
+            if (typeof drawLineAcross === 'function') {
+                drawLineAcross();
+            }
+
+            // 첫 트랙(1.mp3) 즉시 재생
+            if (typeof playTrackByIndex === 'function') {
+                playTrackByIndex(0);
+            }
             
             // 화면 전환
             document.getElementById('start-screen').classList.remove('active');
             document.getElementById('content-screen').classList.add('active');
             
+            // 1번 트랙 자동 재생
+            playTrackByIndex(0);
+
             // 스크롤 인터랙션 초기화
             setTimeout(() => {
                 initScrollInteraction();
@@ -105,6 +150,9 @@
             function updateActiveTrack() {
                 const scrollTop = contentScreen.scrollTop;
                 const viewportCenter = scrollTop + window.innerHeight / 2;
+
+                let nearestIndex = null;
+                let minDistance = Infinity;
                 
                 sections.forEach((section, index) => {
                     const rect = section.getBoundingClientRect();
@@ -115,32 +163,47 @@
                     const trackItem = section.querySelector('.track-item');
                     const isFirst = index === 0;
                     const isLast = index === sections.length - 1;
+
+                    let shouldActive = false;
+                    let compareDistance = distance;
                     
                     // 첫 번째 트랙: 화면 중앙이 첫 섹션 중앙 이전이면 항상 활성화
                     if (isFirst && viewportCenter <= sectionCenter) {
-                        trackItem.classList.add('active');
+                        shouldActive = true;
+                        compareDistance = 0;
                     }
                     // 마지막 트랙: 화면 중앙이 마지막 섹션 중앙 이후면 항상 활성화
                     else if (isLast && viewportCenter >= sectionCenter) {
-                        trackItem.classList.add('active');
+                        shouldActive = true;
+                        compareDistance = 0;
                     }
                     // 중간 트랙: 화면 중앙에 가까우면 활성화
                     else if (distance < 200) {
+                        shouldActive = true;
+                    }
+
+                    if (shouldActive) {
                         trackItem.classList.add('active');
+                        if (compareDistance < minDistance) {
+                            minDistance = compareDistance;
+                            nearestIndex = index;
+                        }
                     } else {
                         trackItem.classList.remove('active');
                     }
                 });
+
+                // 가장 가까운 트랙에 맞춰 오디오 변경
+                if (nearestIndex !== null && nearestIndex !== currentTrackIndex) {
+                    playTrackByIndex(nearestIndex);
+                }
             }
             
             contentScreen.addEventListener('scroll', updateActiveTrack);
             
-            // 초기 첫 트랙 활성화
+            // 초기 첫 트랙 활성화 + 오디오 재생
             setTimeout(() => {
-                const firstTrack = sections[0]?.querySelector('.track-item');
-                if (firstTrack) {
-                    firstTrack.classList.add('active');
-                }
+                updateActiveTrack();
             }, 100);
         }
     </script>
