@@ -4,77 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Pattern Manifesto - AR</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            color: #fff;
-            font-family: sans-serif;
-            padding: 20px;
-        }
-        
-        .container {
-            text-align: center;
-            max-width: 500px;
-        }
-        
-        h1 {
-            font-size: 24px;
-            margin-bottom: 30px;
-            font-weight: 300;
-            letter-spacing: 2px;
-        }
-        
-        .qr-container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-bottom: 30px;
-        }
-        
-        .qr-container img {
-            display: block;
-            width: 300px;
-            height: 300px;
-        }
-        
-        p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #ccc;
-        }
-        
-        @media (max-width: 480px) {
-            .qr-container img {
-                width: 250px;
-                height: 250px;
-            }
-            
-            h1 {
-                font-size: 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/landingStyle.css">
 </head>
 <body>
-    <div class="container">
-        <h1>RANDOM PATTERN MANIFESTO</h1>
-        <div class="qr-container">
-            <img src="asset/qr.png" alt="QR Code">
-        </div>
-        <p>QR 코드를 스캔하여<br>AR 경험을 시작하세요</p>
+    <audio id="bgm" loop>
+        <source src="asset/bgm.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- 시작 화면: RANDOM ACCESS 버튼만 -->
+    <div id="start-screen" class="screen active">
+        <h1 class="main-title">Random Access Memories track listing</h1>
+        <button class="access-button" onclick="startExperience()">RANDOM ACCESS</button>
     </div>
+    
+    <!-- 컨텐츠 화면: QR 코드 등 -->
+    <div id="content-screen" class="screen">
+        <div class="container">
+            <h1>RANDOM PATTERN MANIFESTO</h1>
+            
+            <div class="track-list">
+                <div class="track-item">1. "Give Life Back to Music"</div>
+                <div class="track-item">2. "The Game of Love"</div>
+                <div class="track-item">3. "Giorgio by Moroder"</div>
+                <div class="track-item">4. "Within"</div>
+                <div class="track-item">5. "Instant Crush"</div>
+                <div class="track-item">6. "Lose Yourself to Dance"</div>
+                <div class="track-item">7. "Touch"</div>
+                <div class="track-item">8. "Get Lucky"</div>
+                <div class="track-item">9. "Beyond"</div>
+                <div class="track-item">10. "Motherboard"</div>
+                <div class="track-item">11. "Fragments of Time"</div>
+                <div class="track-item">12. "Doin' It Right"</div>
+                <div class="track-item">13. "Contact"</div>
+            </div>
+        </div>
+        
+        <!-- FAB 버튼 -->
+        <button class="fab" onclick="openQRModal()">AR Poster</button>
+    </div>
+    
+    <!-- QR 모달 -->
+    <div id="qr-modal" class="modal" onclick="closeQRModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="qr-container">
+                <img src="asset/qr.png" alt="QR Code">
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function startExperience() {
+            // 음악 재생 시작
+            const audio = document.getElementById('bgm');
+            audio.play().catch(err => console.log('Audio play failed:', err));
+            
+            // 화면 전환
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('content-screen').classList.add('active');
+        }
+        
+        function openQRModal() {
+            document.getElementById('qr-modal').classList.add('active');
+        }
+        
+        function closeQRModal() {
+            document.getElementById('qr-modal').classList.remove('active');
+        }
+    </script>
 </body>
 </html>
 
