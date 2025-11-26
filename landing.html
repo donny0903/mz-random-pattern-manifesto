@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Pattern Manifesto - AR</title>
     <link rel="stylesheet" href="css/landingStyle.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="js/sketch2.js"></script>
 </head>
 <body>
+    <div id="landing-background"></div>
     <audio id="bgm" loop>
         <source src="asset/bgm.mp3" type="audio/mpeg">
     </audio>
     
     <!-- 시작 화면: RANDOM ACCESS 버튼만 -->
     <div id="start-screen" class="screen active">
-        <h1 class="main-title">Random Access Memories track listing</h1>
         <button class="access-button" onclick="startExperience()">RANDOM ACCESS</button>
     </div>
     
@@ -61,6 +63,11 @@
             // 화면 전환
             document.getElementById('start-screen').classList.remove('active');
             document.getElementById('content-screen').classList.add('active');
+            
+            // 스크롤 인터랙션 초기화
+            setTimeout(() => {
+                initScrollInteraction();
+            }, 500);
         }
         
         function openQRModal() {
@@ -69,6 +76,72 @@
         
         function closeQRModal() {
             document.getElementById('qr-modal').classList.remove('active');
+        }
+        
+        function initScrollInteraction() {
+            const trackList = document.querySelector('.track-list');
+            const trackItems = Array.from(document.querySelectorAll('.track-item'));
+            const contentScreen = document.getElementById('content-screen');
+            
+            // HTML 재구성: 각 트랙을 스크롤 섹션으로 감싸기
+            trackList.innerHTML = '';
+            
+            trackItems.forEach((item, index) => {
+                const section = document.createElement('div');
+                section.className = 'scroll-section';
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'track-item-wrapper';
+                
+                const newItem = item.cloneNode(true);
+                wrapper.appendChild(newItem);
+                section.appendChild(wrapper);
+                trackList.appendChild(section);
+            });
+            
+            // 스크롤 이벤트 리스너
+            const sections = document.querySelectorAll('.scroll-section');
+            
+            function updateActiveTrack() {
+                const scrollTop = contentScreen.scrollTop;
+                const viewportCenter = scrollTop + window.innerHeight / 2;
+                
+                sections.forEach((section, index) => {
+                    const rect = section.getBoundingClientRect();
+                    const sectionTop = scrollTop + rect.top;
+                    const sectionCenter = sectionTop + section.offsetHeight / 2;
+                    const distance = Math.abs(viewportCenter - sectionCenter);
+                    
+                    const trackItem = section.querySelector('.track-item');
+                    const isFirst = index === 0;
+                    const isLast = index === sections.length - 1;
+                    
+                    // 첫 번째 트랙: 화면 중앙이 첫 섹션 중앙 이전이면 항상 활성화
+                    if (isFirst && viewportCenter <= sectionCenter) {
+                        trackItem.classList.add('active');
+                    }
+                    // 마지막 트랙: 화면 중앙이 마지막 섹션 중앙 이후면 항상 활성화
+                    else if (isLast && viewportCenter >= sectionCenter) {
+                        trackItem.classList.add('active');
+                    }
+                    // 중간 트랙: 화면 중앙에 가까우면 활성화
+                    else if (distance < 200) {
+                        trackItem.classList.add('active');
+                    } else {
+                        trackItem.classList.remove('active');
+                    }
+                });
+            }
+            
+            contentScreen.addEventListener('scroll', updateActiveTrack);
+            
+            // 초기 첫 트랙 활성화
+            setTimeout(() => {
+                const firstTrack = sections[0]?.querySelector('.track-item');
+                if (firstTrack) {
+                    firstTrack.classList.add('active');
+                }
+            }, 100);
         }
     </script>
 </body>
